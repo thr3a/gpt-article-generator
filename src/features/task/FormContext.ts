@@ -15,6 +15,7 @@ export type TaskProps =  {
   title: string;
   tableOfContents: string;
   output: string;
+  loading: boolean;
 }
 
 export const [TaskFormProvider, useTaskFormContext, useTaskForm] = createFormContext<TaskProps>();

@@ -1,9 +1,9 @@
-import { NumberInput, Group, Button, TextInput, Textarea, Title } from '@mantine/core';
+import { Group, Button, TextInput, Textarea, Title } from '@mantine/core';
 import { TaskFormProvider, useTaskForm } from '@/features/task/FormContext';
-import { isInRange, hasLength, isNotEmpty } from '@mantine/form';
-import { fetchChatGPT } from '@/features/openai/request';
+import { isNotEmpty } from '@mantine/form';
 import { assistantPrompt, systemPrompt } from '@/features/task/Util';
-import type {ChatCompletionRequestMessage} from 'openai';
+import type { ChatCompletionRequestMessage } from 'openai';
+import type { ResponseProps, SuccessResponseProps, ErrorResponseProps } from '@/pages/api/chat';
 
 export const TaskForm = () => {
   const form = useTaskForm({
@@ -20,6 +20,7 @@ export const TaskForm = () => {
       order4: 'Explain it clearly as if you were explaining it to an elementary school student.',
       order5: 'Write the article in Japanese at least 3000 characters.',
       title: '【初心者向け】Pythonのリスト操作をマスターするためのfor文入門',
+      loading: false,
       tableOfContents: `
 # Pythonのリスト操作をfor文で完全解説！
 
@@ -58,6 +59,7 @@ export const TaskForm = () => {
   });
 
   const handleSubmit = async () => {
+    form.setValues({ loading: true });
     const messages: ChatCompletionRequestMessage[] = [
       {
         role: 'system',
@@ -73,11 +75,16 @@ export const TaskForm = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message: messages }),
+      body: JSON.stringify({ messages: messages }),
     });
-    debugger;
-    const response = await reqResponse.json();
-    form.setValues({output: response.text });
+    const json = await reqResponse.json() as ResponseProps;
+    if (json.status === 'ok') {
+      const response = json as SuccessResponseProps;
+      form.setValues({output: response.result, loading: false });
+    } else {
+      const response = json as ErrorResponseProps;
+      form.setValues({output: 'エラーが発生しました', loading: false });
+    }
   };
 
   return (
@@ -115,7 +122,7 @@ export const TaskForm = () => {
         ></Textarea>
 
         <Group position="center" mt="md">
-          <Button type="submit">送信</Button>
+          <Button type="submit" loaderPosition="center" loading={form.values.loading}>作成!</Button>
         </Group>
 
         <Title order={2}>生成記事</Title>
