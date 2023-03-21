@@ -1,33 +1,70 @@
 import { NumberInput, Group, Button, TextInput, Textarea, Title } from '@mantine/core';
 import { TaskFormProvider, useTaskForm } from '@/features/task/FormContext';
 import { isInRange, hasLength, isNotEmpty } from '@mantine/form';
+import { fetchChatGPT } from '@/features/openai/request';
+import { assistantMessage } from '@/features/task/Util';
 
 export const TaskForm = () => {
   const form = useTaskForm({
     initialValues: {
-      keyword1: '',
-      keyword2: '',
-      keyword3: '',
-      keyword4: '',
-      targetReader: '',
-      readerConcerns: '',
-      order1: '',
-      order2: '',
-      order3: '',
-      order4: '',
-      order5: '',
-      title: '',
-      tableOfContents: '',
+      keyword1: '完全解説',
+      keyword2: 'for文',
+      keyword3: 'python',
+      keyword4: 'リスト',
+      targetReader: 'サンプルコードがなかなか見つからない',
+      readerConcerns: 'プログラマー',
+      order1: 'Write lots of sample code.',
+      order2: 'Write the results of running the sample code.',
+      order3: 'Write URLs for reference.',
+      order4: 'Explain it clearly as if you were explaining it to an elementary school student.',
+      order5: 'Write the article in Japanese at least 3000 characters.',
+      title: '【初心者向け】Pythonのリスト操作をマスターするためのfor文入門',
+      tableOfContents: `
+# Pythonのリスト操作をfor文で完全解説！
+
+## はじめに
+
+## リストとは
+
+### リストの定義
+
+### 空のリストを作る方法
+
+## for文とは
+
+### for文の基本形
+
+### range関数を使ったfor文
+
+### リストを使ったfor文
+
+## リストの操作方法
+
+### 要素の追加
+
+### 要素の削除
+
+### 要素の変更
+
+## まとめ`,
       output: ''
     },
-
     validate: {
-      order1: isNotEmpty('条件1は必須項目です')
+      order1: isNotEmpty('条件1は必須項目です'),
+      title: isNotEmpty('タイトルは必須項目です'),
+      tableOfContents: isNotEmpty('目次は必須項目です')
     },
   });
 
   const handleSubmit = () => {
     console.log(form.values);
+    console.log(assistantMessage(form.values));
+    const systemPrompt = [
+      'I explain tasks to you.',
+      'Do task if you understand these tasks.'
+    ].join('\n');
+
+    // const response = await fetchChatGPT();
   };
 
   return (
@@ -37,7 +74,7 @@ export const TaskForm = () => {
 
         <TextInput label='対象読者' {...form.getInputProps('targetReader')} />
 
-        <TextInput label='読者の悩み' {...form.getInputProps('`readerConcerns`')} />
+        <TextInput label='読者の悩み' {...form.getInputProps('readerConcerns')} />
 
         {[1,2,3,4].map((index) => (
           <TextInput

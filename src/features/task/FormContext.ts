@@ -1,6 +1,6 @@
 import { createFormContext } from '@mantine/form';
 
-type TaskProps =  {
+export type TaskProps =  {
   keyword1: string;
   keyword2: string;
   keyword3: string;

@@ -1,11 +1,11 @@
 import {Configuration, OpenAIApi, ChatCompletionRequestMessage} from 'openai';
 
-const openAiConfig = new Configuration({
-  apiKey: process.env.OPENAI_APIKEY ?? 'xxx'
-});
-const openai = new OpenAIApi(openAiConfig);
+export const fetchChatGPT = async (messages: ChatCompletionRequestMessage[]): Promise<string> => {
+  const openAiConfig = new Configuration({
+    apiKey: process.env.OPENAI_APIKEY ?? 'xxx'
+  });
+  const openai = new OpenAIApi(openAiConfig);
 
-const fetchChatGPT = async (messages: ChatCompletionRequestMessage[]): Promise<string> => {
   // 先頭に追加
   // messages.unshift({
   //   role: 'system',
