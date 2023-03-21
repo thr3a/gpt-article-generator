@@ -1,4 +1,4 @@
-import { Group, Button, TextInput, Textarea, Title, CopyButton, Box, Stack } from '@mantine/core';
+import { Group, Button, TextInput, Textarea, Title, CopyButton } from '@mantine/core';
 import { TaskFormProvider, useTaskForm } from '@/features/task/FormContext';
 import { isNotEmpty } from '@mantine/form';
 import { assistantPrompt, systemPrompt } from '@/features/task/Util';
@@ -15,19 +15,19 @@ export const TaskForm = () => {
       keyword4: '',
       targetReader: 'プログラマー',
       readerConcerns: '',
-      order1: 'Write the article in Japanese',
-      order2: 'Explain it clearly as if you were explaining it to high school student.',
-      order3: 'Write lots of sample code and Write the results of running the sample code.',
+      order1: 'Provide numerous sample codes and their corresponding execution results.',
+      order2: 'Write the article in Japanese, with a minimum of 3000 characters.',
+      order3: '',
       order4: '',
       order5: '',
       title: '',
       loading: false,
       tableOfContents: `
-# はじめに
+# 今回やりたいこと
 
 # やり方 手順
 
-# 注意点,補足
+# 注意点・補足
 
 `,
       output: ''
