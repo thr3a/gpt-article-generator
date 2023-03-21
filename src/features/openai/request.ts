@@ -5,12 +5,6 @@ export const fetchChatGPT = async (messages: ChatCompletionRequestMessage[]): Pr
     apiKey: process.env.OPENAI_APIKEY ?? 'xxx'
   });
   const openai = new OpenAIApi(openAiConfig);
-
-  // 先頭に追加
-  // messages.unshift({
-  //   role: 'system',
-  //   content: BASE_PROMPT
-  // });
   const completion = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
     messages: messages,

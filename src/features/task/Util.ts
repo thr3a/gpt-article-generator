@@ -1,6 +1,11 @@
 import { TaskProps } from '@/features/task/FormContext';
 
-export const assistantMessage = (value: TaskProps): string => {
+export const systemPrompt = [
+  'I explain tasks to you.',
+  'Do task if you understand these tasks.'
+].join('\n');
+
+export const assistantPrompt = (value: TaskProps): string => {
   return `
 [Keyword-1]:${value.keyword1}
 [Keyword-2]:${value.keyword2}
@@ -16,5 +21,12 @@ export const assistantMessage = (value: TaskProps): string => {
 [Title]:${value.title}
 [table of contents]:
 ${value.tableOfContents.replace(/^\s+|\s+$/g, '')}
+
+[Task]:
+you say "=============== Output starts ==============" when this task is starts
+you write contents of Headings and subheadings in detail.
+These contents should be based on [order-1] and [order-2] and ... and [order-N].
+These contents should be output in Markdown format.
+you say "=============== Output ends ==============" when this task is complete
   `.replace(/^\s+|\s+$/g, '');
 };

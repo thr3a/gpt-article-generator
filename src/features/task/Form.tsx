@@ -2,7 +2,8 @@ import { NumberInput, Group, Button, TextInput, Textarea, Title } from '@mantine
 import { TaskFormProvider, useTaskForm } from '@/features/task/FormContext';
 import { isInRange, hasLength, isNotEmpty } from '@mantine/form';
 import { fetchChatGPT } from '@/features/openai/request';
-import { assistantMessage } from '@/features/task/Util';
+import { assistantPrompt, systemPrompt } from '@/features/task/Util';
+import type {ChatCompletionRequestMessage} from 'openai';
 
 export const TaskForm = () => {
   const form = useTaskForm({
@@ -56,15 +57,27 @@ export const TaskForm = () => {
     },
   });
 
-  const handleSubmit = () => {
-    console.log(form.values);
-    console.log(assistantMessage(form.values));
-    const systemPrompt = [
-      'I explain tasks to you.',
-      'Do task if you understand these tasks.'
-    ].join('\n');
-
-    // const response = await fetchChatGPT();
+  const handleSubmit = async () => {
+    const messages: ChatCompletionRequestMessage[] = [
+      {
+        role: 'system',
+        content: systemPrompt
+      },
+      {
+        role: 'assistant',
+        content: assistantPrompt(form.values)
+      }
+    ];
+    const reqResponse = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: messages }),
+    });
+    debugger;
+    const response = await reqResponse.json();
+    form.setValues({output: response.text });
   };
 
   return (
