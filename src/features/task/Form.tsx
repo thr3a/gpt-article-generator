@@ -1,4 +1,4 @@
-import { NumberInput, Group, Button, TextInput } from '@mantine/core';
+import { NumberInput, Group, Button, TextInput, Textarea, Title } from '@mantine/core';
 import { TaskFormProvider, useTaskForm } from '@/features/task/FormContext';
 import { isInRange, hasLength, isNotEmpty } from '@mantine/form';
 
@@ -15,6 +15,7 @@ export const TaskForm = () => {
       order2: '',
       order3: '',
       order4: '',
+      order5: '',
       title: '',
       tableOfContents: '',
       output: ''
@@ -22,8 +23,6 @@ export const TaskForm = () => {
 
     validate: {
       order1: isNotEmpty('条件1は必須項目です')
-      // name: hasLength({ min: 2, max: 10 }, 'Name must be 2-10 characters long'),
-      // age: isInRange({ min: 18, max: 99 }, 'You must be 18-99 years old to register'),
     },
   });
 
@@ -34,10 +33,48 @@ export const TaskForm = () => {
   return (
     <TaskFormProvider form={form}>
       <form onSubmit={form.onSubmit(() => handleSubmit())}>
-        <TextInput label="条件1" {...form.getInputProps('order1')} />
+        <TextInput label='記事タイトル' withAsterisk {...form.getInputProps('title')} />
+
+        <TextInput label='対象読者' {...form.getInputProps('targetReader')} />
+
+        <TextInput label='読者の悩み' {...form.getInputProps('`readerConcerns`')} />
+
+        {[1,2,3,4].map((index) => (
+          <TextInput
+            key={index}
+            label={`キーワード${index}`}
+            {...form.getInputProps(`keyword${index}`)}
+          />
+        ))}
+
+        {[1,2,3,4,5].map((index) => (
+          <TextInput
+            key={index}
+            label={`条件${index}`}
+            {...form.getInputProps(`order${index}`)}
+            {...(index === 1 && { withAsterisk: true })}
+          />
+        ))}
+
+        <Textarea
+          label='目次'
+          withAsterisk
+          {...form.getInputProps('tableOfContents')}
+          minRows={12}
+          autosize
+        ></Textarea>
+
         <Group position="center" mt="md">
           <Button type="submit">送信</Button>
         </Group>
+
+        <Title order={2}>生成記事</Title>
+        <Textarea
+          {...form.getInputProps('output')}
+          minRows={10}
+          autosize
+        ></Textarea>
+
       </form>
     </TaskFormProvider>
   );
