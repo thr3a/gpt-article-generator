@@ -9,27 +9,20 @@ import { useEventListener } from '@mantine/hooks';
 export const TaskForm = () => {
   const form = useTaskForm({
     initialValues: {
+      title: 'typescriptでdiscord botを作ってみた',
       keyword1: '',
       keyword2: '',
       keyword3: '',
       keyword4: '',
-      targetReader: 'プログラマー',
-      readerConcerns: '',
-      order1: 'Provide numerous sample codes and their corresponding execution results.',
-      order2: 'Write the article in Japanese, with a minimum of 3000 characters.',
+      order1: 'A bulleted list using the "+" symbol is an outline of the content and should not be included in the body of the article. Please use the bulleted list as a guide and write the article accordingly.',
+      order2: '',
       order3: '',
       order4: '',
       order5: '',
-      title: '',
+      targetReader: '',
+      readerConcerns: '',
       loading: false,
-      tableOfContents: `
-# 今回やりたいこと
-
-# やり方 手順
-
-# 注意点・補足
-
-`,
+      tableOfContents: '',
       output: ''
     },
     validate: {
@@ -78,17 +71,17 @@ export const TaskForm = () => {
       <form onSubmit={form.onSubmit(() => handleSubmit())}>
         <TextInput label='記事タイトル' withAsterisk {...form.getInputProps('title')} />
 
-        <TextInput label='対象読者' {...form.getInputProps('targetReader')} />
+        {/* <TextInput label='対象読者' {...form.getInputProps('targetReader')} /> */}
 
-        <TextInput label='読者の悩み' {...form.getInputProps('readerConcerns')} />
+        {/* <TextInput label='読者の悩み' {...form.getInputProps('readerConcerns')} /> */}
 
-        {[1,2,3,4].map((index) => (
+        {/* {[1,2,3,4].map((index) => (
           <TextInput
             key={index}
             label={`キーワード${index}`}
             {...form.getInputProps(`keyword${index}`)}
           />
-        ))}
+        ))} */}
 
         {[1,2,3,4,5].map((index) => (
           <TextInput
@@ -100,7 +93,7 @@ export const TaskForm = () => {
         ))}
 
         <Textarea
-          label='目次'
+          label='途中までの記事'
           withAsterisk
           {...form.getInputProps('tableOfContents')}
           minRows={12}
