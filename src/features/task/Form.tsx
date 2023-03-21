@@ -1,54 +1,35 @@
-import { Group, Button, TextInput, Textarea, Title } from '@mantine/core';
+import { Group, Button, TextInput, Textarea, Title, CopyButton, Box, Stack } from '@mantine/core';
 import { TaskFormProvider, useTaskForm } from '@/features/task/FormContext';
 import { isNotEmpty } from '@mantine/form';
 import { assistantPrompt, systemPrompt } from '@/features/task/Util';
 import type { ChatCompletionRequestMessage } from 'openai';
 import type { ResponseProps, SuccessResponseProps, ErrorResponseProps } from '@/pages/api/chat';
+import { useEventListener } from '@mantine/hooks';
 
 export const TaskForm = () => {
   const form = useTaskForm({
     initialValues: {
-      keyword1: '完全解説',
-      keyword2: 'for文',
-      keyword3: 'python',
-      keyword4: 'リスト',
-      targetReader: 'サンプルコードがなかなか見つからない',
-      readerConcerns: 'プログラマー',
-      order1: 'Write lots of sample code.',
-      order2: 'Write the results of running the sample code.',
-      order3: 'Write URLs for reference.',
-      order4: 'Explain it clearly as if you were explaining it to an elementary school student.',
-      order5: 'Write the article in Japanese at least 3000 characters.',
-      title: '【初心者向け】Pythonのリスト操作をマスターするためのfor文入門',
+      keyword1: '',
+      keyword2: '',
+      keyword3: '',
+      keyword4: '',
+      targetReader: 'プログラマー',
+      readerConcerns: '',
+      order1: 'Write the article in Japanese',
+      order2: 'Explain it clearly as if you were explaining it to high school student.',
+      order3: 'Write lots of sample code and Write the results of running the sample code.',
+      order4: '',
+      order5: '',
+      title: '',
       loading: false,
       tableOfContents: `
-# Pythonのリスト操作をfor文で完全解説！
+# はじめに
 
-## はじめに
+# やり方 手順
 
-## リストとは
+# 注意点,補足
 
-### リストの定義
-
-### 空のリストを作る方法
-
-## for文とは
-
-### for文の基本形
-
-### range関数を使ったfor文
-
-### リストを使ったfor文
-
-## リストの操作方法
-
-### 要素の追加
-
-### 要素の削除
-
-### 要素の変更
-
-## まとめ`,
+`,
       output: ''
     },
     validate: {
@@ -57,6 +38,11 @@ export const TaskForm = () => {
       tableOfContents: isNotEmpty('目次は必須項目です')
     },
   });
+
+  const resetFromValue = () => {
+    form.reset();
+  };
+  const ref = useEventListener('click', resetFromValue);
 
   const handleSubmit = async () => {
     form.setValues({ loading: true });
@@ -121,11 +107,24 @@ export const TaskForm = () => {
           autosize
         ></Textarea>
 
-        <Group position="center" mt="md">
-          <Button type="submit" loaderPosition="center" loading={form.values.loading}>作成!</Button>
+        <Group position='right' mt="sm">
+          <Button color="red" ref={ref}>リセット</Button>
         </Group>
 
-        <Title order={2}>生成記事</Title>
+        <Group position="center">
+          <Button type="submit" loaderPosition="center" loading={form.values.loading}>作成!</Button>
+        </Group>
+        <Group mt="sm" mb="sm">
+          <Title order={2}>生成記事</Title>
+          <CopyButton value={form.values.output}>
+            {({ copied, copy }) => (
+              <Button color={copied ? 'teal' : 'gray'} onClick={copy} size="xs">
+                {copied ? 'コピーしました！' : 'クリップボードにコピー'}
+              </Button>
+            )}
+          </CopyButton>
+        </Group>
+
         <Textarea
           {...form.getInputProps('output')}
           minRows={10}
