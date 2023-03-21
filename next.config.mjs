@@ -3,11 +3,11 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   // basePath: process.env.GITHUB_ACTIONS && 'nextjs-template',
-  trailingSlash: true, 
+  trailingSlash: true,
   images: {
     unoptimized: true
   },
-  // output: 'standalone'
+  output: 'standalone'
 };
 
 export default nextConfig;
