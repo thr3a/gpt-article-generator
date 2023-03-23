@@ -11,8 +11,8 @@ export const TaskForm = () => {
     initialValues: {
       title: '',
       articleType: 'diary',
-      order1: '話し言葉で、一人称は「俺」',
-      order2: 'マークダウン形式',
+      order1: '',
+      order2: '',
       order3: '',
       order4: '',
       order5: '',
@@ -21,7 +21,7 @@ export const TaskForm = () => {
       output: ''
     },
     validate: {
-      title: isNotEmpty('タイトルは必須項目です'),
+      // title: isNotEmpty('タイトルは必須項目です'),
       scripts: isNotEmpty('箇条書きは必須項目です')
     },
   });
@@ -37,6 +37,7 @@ export const TaskForm = () => {
     const systemPrompt = `
 I want you to act like a blogger.
 Convert the bullet point script into a ${form.values.articleType} written in fluent Japanese without omitting the original information.
+話し言葉で、一人称は「俺」 マークダウン形式
     `;
 
     const messages: ChatCompletionRequestMessage[] = [
@@ -82,7 +83,7 @@ Convert the bullet point script into a ${form.values.articleType} written in flu
         </Radio.Group>
 
 
-        <TextInput label='記事タイトル' withAsterisk {...form.getInputProps('title')} />
+        {/* <TextInput label='記事タイトル' withAsterisk {...form.getInputProps('title')} /> */}
 
         {/* <TextInput label='対象読者' {...form.getInputProps('targetReader')} /> */}
 
@@ -96,14 +97,14 @@ Convert the bullet point script into a ${form.values.articleType} written in flu
           />
         ))} */}
 
-        {[1,2,3,4,5].map((index) => (
+        {/* {[1,2,3,4,5].map((index) => (
           <TextInput
             key={index}
             label={`条件${index}`}
             {...form.getInputProps(`order${index}`)}
             {...(index === 1 && { withAsterisk: true })}
           />
-        ))}
+        ))} */}
 
         <Textarea
           label='文章にしたい箇条書き'
