@@ -1,7 +1,7 @@
-import { Group, Button, TextInput, Textarea, Title, CopyButton } from '@mantine/core';
+import { Group, Button, TextInput, Textarea, Title, CopyButton, Radio } from '@mantine/core';
 import { TaskFormProvider, useTaskForm } from '@/features/task/FormContext';
 import { isNotEmpty } from '@mantine/form';
-import { assistantPrompt, systemPrompt } from '@/features/task/Util';
+import { assistantPrompt } from '@/features/task/Util';
 import type { ChatCompletionRequestMessage } from 'openai';
 import type { ResponseProps, SuccessResponseProps, ErrorResponseProps } from '@/pages/api/chat';
 import { useEventListener } from '@mantine/hooks';
@@ -9,26 +9,20 @@ import { useEventListener } from '@mantine/hooks';
 export const TaskForm = () => {
   const form = useTaskForm({
     initialValues: {
-      title: 'typescriptでdiscord botを作ってみた',
-      keyword1: '',
-      keyword2: '',
-      keyword3: '',
-      keyword4: '',
-      order1: 'A bulleted list using the "+" symbol is an outline of the content and should not be included in the body of the article. Please use the bulleted list as a guide and write the article accordingly.',
-      order2: '',
+      title: '',
+      articleType: 'diary',
+      order1: '話し言葉で、一人称は「俺」',
+      order2: 'マークダウン形式',
       order3: '',
       order4: '',
       order5: '',
-      targetReader: '',
-      readerConcerns: '',
       loading: false,
-      tableOfContents: '',
+      scripts: '',
       output: ''
     },
     validate: {
-      order1: isNotEmpty('条件1は必須項目です'),
       title: isNotEmpty('タイトルは必須項目です'),
-      tableOfContents: isNotEmpty('目次は必須項目です')
+      scripts: isNotEmpty('箇条書きは必須項目です')
     },
   });
 
@@ -39,6 +33,12 @@ export const TaskForm = () => {
 
   const handleSubmit = async () => {
     form.setValues({ loading: true });
+
+    const systemPrompt = `
+I want you to act like a blogger.
+Convert the bullet point script into a ${form.values.articleType} written in fluent Japanese without omitting the original information.
+    `;
+
     const messages: ChatCompletionRequestMessage[] = [
       {
         role: 'system',
@@ -69,6 +69,19 @@ export const TaskForm = () => {
   return (
     <TaskFormProvider form={form}>
       <form onSubmit={form.onSubmit(() => handleSubmit())}>
+        <Radio.Group
+          label="記事タイプ"
+          withAsterisk
+          {...form.getInputProps('articleType')}
+        >
+          <Group mt="xs">
+            <Radio value="diary" label="日記" />
+            <Radio value="tech article" label="技術ブログ" />
+            <Radio value="blog article" label="解説記事" />
+          </Group>
+        </Radio.Group>
+
+
         <TextInput label='記事タイトル' withAsterisk {...form.getInputProps('title')} />
 
         {/* <TextInput label='対象読者' {...form.getInputProps('targetReader')} /> */}
@@ -93,9 +106,9 @@ export const TaskForm = () => {
         ))}
 
         <Textarea
-          label='途中までの記事'
+          label='文章にしたい箇条書き'
           withAsterisk
-          {...form.getInputProps('tableOfContents')}
+          {...form.getInputProps('scripts')}
           minRows={12}
           autosize
         ></Textarea>
@@ -128,3 +141,4 @@ export const TaskForm = () => {
     </TaskFormProvider>
   );
 };
+// tech article

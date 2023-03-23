@@ -12,7 +12,7 @@ export default function App(props: AppProps) {
   return (
     <>
       <Head>
-        <title>ブログ記事自動生成おたすけくん</title>
+        <title>ブログ記事おたすけくん</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no" />
         <meta name="description" content="ブログ記事自動生成先生" />
         <link rel="icon" href="/favicon.ico" />
