@@ -37,7 +37,7 @@ export const TaskForm = () => {
     const systemPrompt = `
 I want you to act like a blogger.
 Convert the bullet point script into a ${form.values.articleType} written in fluent Japanese without omitting the original information.
-話し言葉で、一人称は「俺」 マークダウン形式
+出力は話し言葉,一人称は「俺」,マークダウン形式
     `;
 
     const messages: ChatCompletionRequestMessage[] = [
