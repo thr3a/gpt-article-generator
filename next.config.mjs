@@ -7,7 +7,8 @@ const nextConfig = {
   images: {
     unoptimized: true
   },
-  output: 'standalone'
+  output: 'standalone',
+  poweredByHeader: false
 };
 
 export default nextConfig;

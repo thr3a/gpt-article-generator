@@ -1,24 +1,18 @@
-import { Group, Button, TextInput, Textarea, Title, CopyButton, Radio } from '@mantine/core';
+import { Group, Button, Textarea, Title, CopyButton, Radio } from '@mantine/core';
 import { TaskFormProvider, useTaskForm } from '@/features/task/FormContext';
 import { isNotEmpty } from '@mantine/form';
 import { assistantPrompt } from '@/features/task/Util';
-import type { ChatCompletionRequestMessage } from 'openai';
-import type { ResponseProps, SuccessResponseProps, ErrorResponseProps } from '@/pages/api/chat';
 import { useEventListener } from '@mantine/hooks';
+import { useState } from 'react';
 
 export const TaskForm = () => {
+  const [output, setOutput] = useState('');
   const form = useTaskForm({
     initialValues: {
       title: '',
       articleType: 'diary',
-      order1: '',
-      order2: '',
-      order3: '',
-      order4: '',
-      order5: '',
       loading: false,
       scripts: '',
-      output: ''
     },
     validate: {
       // title: isNotEmpty('タイトルは必須項目です'),
@@ -32,6 +26,7 @@ export const TaskForm = () => {
   const ref = useEventListener('click', resetFromValue);
 
   const handleSubmit = async () => {
+    setOutput('');
     form.setValues({ loading: true });
 
     const systemPrompt = `
@@ -40,30 +35,29 @@ Convert the bullet point script into a ${form.values.articleType} written in flu
 出力は話し言葉,一人称は「俺」,マークダウン形式
     `;
 
-    const messages: ChatCompletionRequestMessage[] = [
-      {
-        role: 'system',
-        content: systemPrompt
-      },
-      {
-        role: 'assistant',
-        content: assistantPrompt(form.values)
-      }
-    ];
-    const reqResponse = await fetch('/api/chat', {
+    const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ messages: messages }),
+      body: JSON.stringify({ system_message: systemPrompt, human_message: assistantPrompt(form.values) }),
     });
-    const json = await reqResponse.json() as ResponseProps;
-    if (json.status === 'ok') {
-      const response = json as SuccessResponseProps;
-      form.setValues({output: response.result, loading: false });
-    } else {
-      const response = json as ErrorResponseProps;
-      form.setValues({output: 'エラーが発生しました', loading: false });
+    const stream = response.body;
+    const reader = stream?.getReader();
+    try {
+      while (true) {
+        const { done, value }:any = await reader?.read();
+        if (done) {
+          break;
+        }
+        const decodedValue = new TextDecoder().decode(value);
+        setOutput(prevOutput => prevOutput + decodedValue);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      form.setValues({loading: false });
+      reader?.releaseLock();
     }
   };
 
@@ -123,7 +117,7 @@ Convert the bullet point script into a ${form.values.articleType} written in flu
         </Group>
         <Group mt="sm" mb="sm">
           <Title order={2}>生成記事</Title>
-          <CopyButton value={form.values.output}>
+          <CopyButton value={output}>
             {({ copied, copy }) => (
               <Button color={copied ? 'teal' : 'gray'} onClick={copy} size="xs">
                 {copied ? 'コピーしました！' : 'クリップボードにコピー'}
@@ -133,7 +127,7 @@ Convert the bullet point script into a ${form.values.articleType} written in flu
         </Group>
 
         <Textarea
-          {...form.getInputProps('output')}
+          value={output}
           minRows={10}
           autosize
         ></Textarea>
