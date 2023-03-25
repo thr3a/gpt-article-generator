@@ -20,6 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       openAIApiKey: process.env.OPENAI_APIKEY,
       modelName: 'gpt-3.5-turbo',
       streaming: true,
+      temperature: 0.7,
       callbackManager: CallbackManager.fromHandlers({
         async handleLLMNewToken(token: string) {
           res.write(`${token}`);
