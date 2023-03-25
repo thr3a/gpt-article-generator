@@ -5,7 +5,7 @@ import { assistantPrompt } from '@/features/task/Util';
 import { useEventListener } from '@mantine/hooks';
 import { useState } from 'react';
 
-export const TaskForm = () => {
+export const TaskForm = (props: { csrfToken: string}) => {
   const [output, setOutput] = useState('');
   const form = useTaskForm({
     initialValues: {
@@ -31,15 +31,18 @@ export const TaskForm = () => {
 
     const systemPrompt = `
 As a blogger, Convert the bullet point script into a ${form.values.articleType} written in fluent Japanese without omitting the original information.
-出力は話し言葉,一人称は「俺」,マークダウン形式
+出力は話し言葉で一人称は「俺」でマークダウン形式
     `;
-
-    const response = await fetch('/api/chat', {
+    const response = await fetch('/api/chat/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ system_message: systemPrompt, human_message: assistantPrompt(form.values) }),
+      body: JSON.stringify({
+        system_message: systemPrompt,
+        human_message: assistantPrompt(form.values),
+        csrf_token: props.csrfToken,
+      }),
     });
     const stream = response.body;
     const reader = stream?.getReader();

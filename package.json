@@ -21,6 +21,7 @@
     "@mantine/next": "^6.0.4",
     "@mantine/notifications": "^6.0.4",
     "@tabler/icons-react": "^2.11.0",
+    "edge-csrf": "^1.0.3-rc1",
     "langchain": "^0.0.39",
     "next": "13.2.4",
     "openai": "^3.2.1",
