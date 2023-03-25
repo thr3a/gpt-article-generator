@@ -1,11 +1,13 @@
-import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import type { NextPage, GetServerSideProps } from 'next';
 import { TaskForm } from '@/features/task/Form';
 import { Text } from '@mantine/core';
 
-type Props = InferGetServerSidePropsType<typeof getServerSideProps>;
+type Props = {
+  csrfToken: string;
+}
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  const csrfToken = res.getHeader('X-CSRF-Token') as string || 'missing';
+  const csrfToken = res.getHeader('X-CSRF-Token') || 'missing';
   return { props: { csrfToken } };
 };
 

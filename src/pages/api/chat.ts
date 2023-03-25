@@ -5,7 +5,7 @@ import { SystemChatMessage, HumanChatMessage } from 'langchain/schema';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
-    res.status(405).json({ status: 'ng' });
+    res.status(405).send('Method Not Allowed');
     res.end();
     return;
   }

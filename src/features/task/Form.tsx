@@ -46,13 +46,14 @@ As a blogger, Convert the bullet point script into a ${form.values.articleType} 
     });
     const stream = response.body;
     const reader = stream?.getReader();
+    const decoder = new TextDecoder('utf-8');
     try {
       while (true) {
         const { done, value }:any = await reader?.read();
         if (done) {
           break;
         }
-        const decodedValue = new TextDecoder().decode(value);
+        const decodedValue = decoder.decode(value, { stream: true });
         setOutput(prevOutput => prevOutput + decodedValue);
       }
     } catch (error) {
@@ -77,30 +78,6 @@ As a blogger, Convert the bullet point script into a ${form.values.articleType} 
             <Radio value="blog article" label="解説記事" />
           </Group>
         </Radio.Group>
-
-
-        {/* <TextInput label='記事タイトル' withAsterisk {...form.getInputProps('title')} /> */}
-
-        {/* <TextInput label='対象読者' {...form.getInputProps('targetReader')} /> */}
-
-        {/* <TextInput label='読者の悩み' {...form.getInputProps('readerConcerns')} /> */}
-
-        {/* {[1,2,3,4].map((index) => (
-          <TextInput
-            key={index}
-            label={`キーワード${index}`}
-            {...form.getInputProps(`keyword${index}`)}
-          />
-        ))} */}
-
-        {/* {[1,2,3,4,5].map((index) => (
-          <TextInput
-            key={index}
-            label={`条件${index}`}
-            {...form.getInputProps(`order${index}`)}
-            {...(index === 1 && { withAsterisk: true })}
-          />
-        ))} */}
 
         <Textarea
           label='文章にしたい箇条書き'
