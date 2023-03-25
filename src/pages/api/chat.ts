@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       , 'Transfer-Encoding': 'chunked' });
 
     const chat = new ChatOpenAI({
-      openAIApiKey: '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',
+      openAIApiKey: process.env.OPENAI_APIKEY,
       modelName: 'gpt-3.5-turbo',
       streaming: true,
       callbackManager: CallbackManager.fromHandlers({
