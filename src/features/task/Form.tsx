@@ -1,41 +1,22 @@
-import { Group, Button, TextInput, Textarea, Title, CopyButton } from '@mantine/core';
+import { Group, Button, Textarea, Title, CopyButton, Radio } from '@mantine/core';
 import { TaskFormProvider, useTaskForm } from '@/features/task/FormContext';
 import { isNotEmpty } from '@mantine/form';
-import { assistantPrompt, systemPrompt } from '@/features/task/Util';
-import type { ChatCompletionRequestMessage } from 'openai';
-import type { ResponseProps, SuccessResponseProps, ErrorResponseProps } from '@/pages/api/chat';
+import { assistantPrompt } from '@/features/task/Util';
 import { useEventListener } from '@mantine/hooks';
+import { useState } from 'react';
 
-export const TaskForm = () => {
+export const TaskForm = (props: { csrfToken: string}) => {
+  const [output, setOutput] = useState('');
   const form = useTaskForm({
     initialValues: {
-      keyword1: '',
-      keyword2: '',
-      keyword3: '',
-      keyword4: '',
-      targetReader: 'プログラマー',
-      readerConcerns: '',
-      order1: 'Provide numerous sample codes and their corresponding execution results.',
-      order2: 'Write the article in Japanese, with a minimum of 3000 characters.',
-      order3: '',
-      order4: '',
-      order5: '',
       title: '',
+      articleType: 'diary',
       loading: false,
-      tableOfContents: `
-# 今回やりたいこと
-
-# やり方 手順
-
-# 注意点・補足
-
-`,
-      output: ''
+      scripts: '',
     },
     validate: {
-      order1: isNotEmpty('条件1は必須項目です'),
-      title: isNotEmpty('タイトルは必須項目です'),
-      tableOfContents: isNotEmpty('目次は必須項目です')
+      // title: isNotEmpty('タイトルは必須項目です'),
+      scripts: isNotEmpty('箇条書きは必須項目です')
     },
   });
 
@@ -45,64 +26,63 @@ export const TaskForm = () => {
   const ref = useEventListener('click', resetFromValue);
 
   const handleSubmit = async () => {
+    setOutput('');
     form.setValues({ loading: true });
-    const messages: ChatCompletionRequestMessage[] = [
-      {
-        role: 'system',
-        content: systemPrompt
-      },
-      {
-        role: 'assistant',
-        content: assistantPrompt(form.values)
-      }
-    ];
-    const reqResponse = await fetch('/api/chat', {
+
+    const systemPrompt = `
+As a blogger, Convert the bullet point script into a ${form.values.articleType} written in fluent Japanese without omitting the original information.
+出力は話し言葉で一人称は「俺」でマークダウン形式
+    `;
+    const response = await fetch('/api/chat/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ messages: messages }),
+      body: JSON.stringify({
+        system_message: systemPrompt,
+        human_message: assistantPrompt(form.values),
+        csrf_token: props.csrfToken,
+      }),
     });
-    const json = await reqResponse.json() as ResponseProps;
-    if (json.status === 'ok') {
-      const response = json as SuccessResponseProps;
-      form.setValues({output: response.result, loading: false });
-    } else {
-      const response = json as ErrorResponseProps;
-      form.setValues({output: 'エラーが発生しました', loading: false });
+    const stream = response.body;
+    const reader = stream?.getReader();
+    const decoder = new TextDecoder('utf-8');
+    try {
+      while (true) {
+        const { done, value }:any = await reader?.read();
+        if (done) {
+          break;
+        }
+        const decodedValue = decoder.decode(value, { stream: true });
+        setOutput(prevOutput => prevOutput + decodedValue);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      form.setValues({loading: false });
+      reader?.releaseLock();
     }
   };
 
   return (
     <TaskFormProvider form={form}>
       <form onSubmit={form.onSubmit(() => handleSubmit())}>
-        <TextInput label='記事タイトル' withAsterisk {...form.getInputProps('title')} />
-
-        <TextInput label='対象読者' {...form.getInputProps('targetReader')} />
-
-        <TextInput label='読者の悩み' {...form.getInputProps('readerConcerns')} />
-
-        {[1,2,3,4].map((index) => (
-          <TextInput
-            key={index}
-            label={`キーワード${index}`}
-            {...form.getInputProps(`keyword${index}`)}
-          />
-        ))}
-
-        {[1,2,3,4,5].map((index) => (
-          <TextInput
-            key={index}
-            label={`条件${index}`}
-            {...form.getInputProps(`order${index}`)}
-            {...(index === 1 && { withAsterisk: true })}
-          />
-        ))}
+        <Radio.Group
+          label="記事タイプ"
+          withAsterisk
+          {...form.getInputProps('articleType')}
+        >
+          <Group mt="xs">
+            <Radio value="diary" label="日記" />
+            <Radio value="tech article" label="技術ブログ" />
+            <Radio value="blog article" label="解説記事" />
+          </Group>
+        </Radio.Group>
 
         <Textarea
-          label='目次'
+          label='文章にしたい箇条書き'
           withAsterisk
-          {...form.getInputProps('tableOfContents')}
+          {...form.getInputProps('scripts')}
           minRows={12}
           autosize
         ></Textarea>
@@ -116,7 +96,7 @@ export const TaskForm = () => {
         </Group>
         <Group mt="sm" mb="sm">
           <Title order={2}>生成記事</Title>
-          <CopyButton value={form.values.output}>
+          <CopyButton value={output}>
             {({ copied, copy }) => (
               <Button color={copied ? 'teal' : 'gray'} onClick={copy} size="xs">
                 {copied ? 'コピーしました！' : 'クリップボードにコピー'}
@@ -126,7 +106,7 @@ export const TaskForm = () => {
         </Group>
 
         <Textarea
-          {...form.getInputProps('output')}
+          value={output}
           minRows={10}
           autosize
         ></Textarea>
@@ -135,3 +115,4 @@ export const TaskForm = () => {
     </TaskFormProvider>
   );
 };
+// tech article
