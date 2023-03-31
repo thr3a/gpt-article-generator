@@ -29,10 +29,7 @@ export const TaskForm = (props: { csrfToken: string}) => {
     setOutput('');
     form.setValues({ loading: true });
 
-    const systemPrompt = `
-As a blogger, Convert the bullet point script into a ${form.values.articleType} written in fluent Japanese without omitting the original information.
-出力は話し言葉で一人称は「俺」でマークダウン形式
-    `;
+    const systemPrompt = 'I want you to act as a professional writer.';
     const response = await fetch('/api/chat/', {
       method: 'POST',
       headers: {
