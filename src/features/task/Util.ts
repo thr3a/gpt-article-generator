@@ -6,8 +6,8 @@ export const assistantPrompt = (value: TaskProps): string => {
 Convert the bullet point script into a article written in fluent Japanese without omitting the original information.
 
 [Rule]
-- 話し言葉
-- 書き手は男性。一人称は私。
+- ぶっきらぼうな口調
+- 書き手は男性 一人称は俺
 - markdown format
 
 [bullet point script]
