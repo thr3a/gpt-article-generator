@@ -10,7 +10,7 @@ export const TaskForm = (props: { csrfToken: string}) => {
   const form = useTaskForm({
     initialValues: {
       title: '',
-      articleType: 'diary',
+      articleType: 'sentences',
       loading: false,
       scripts: '',
     },
@@ -70,9 +70,8 @@ export const TaskForm = (props: { csrfToken: string}) => {
           {...form.getInputProps('articleType')}
         >
           <Group mt="xs">
-            <Radio value="diary" label="日記" />
-            <Radio value="tech article" label="技術ブログ" />
-            <Radio value="blog article" label="解説記事" />
+            <Radio value="sentences" label="文章" />
+            <Radio value="articles" label="記事" />
           </Group>
         </Radio.Group>
 
