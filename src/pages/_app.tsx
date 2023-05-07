@@ -25,6 +25,16 @@ export default function App(props: AppProps) {
           defaultRadius: 'xs',
           fontFamily: '"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif',
           components: {
+            Textarea: {
+              styles: (theme) => ({
+                label: {
+                  fontWeight: 'bold',
+                },
+                root: {
+                  marginBottom: theme.spacing.xs,
+                }
+              })
+            },
             TextInput: {
               styles: (theme) => ({
                 label: {
