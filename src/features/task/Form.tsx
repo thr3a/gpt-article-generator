@@ -4,6 +4,8 @@ import { isNotEmpty } from '@mantine/form';
 import { assistantPrompt } from '@/features/task/Util';
 import { useEventListener } from '@mantine/hooks';
 import { useState } from 'react';
+import { requestSchema } from '@/pages/api/chat';
+import { z } from 'zod';
 
 export const TaskForm = (props: { csrfToken: string}) => {
   const [output, setOutput] = useState('');
@@ -30,16 +32,18 @@ export const TaskForm = (props: { csrfToken: string}) => {
     form.setValues({ loading: true });
 
     const systemPrompt = 'I want you to act as a professional writer.';
+    const params: z.infer<typeof requestSchema> = {
+      system_message: systemPrompt,
+      human_message: assistantPrompt(form.values),
+      csrf_token: props.csrfToken,
+      temperature: 0.1
+    };
     const response = await fetch('/api/chat/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        system_message: systemPrompt,
-        human_message: assistantPrompt(form.values),
-        csrf_token: props.csrfToken,
-      }),
+      body: JSON.stringify(params),
     });
     const stream = response.body;
     const reader = stream?.getReader();

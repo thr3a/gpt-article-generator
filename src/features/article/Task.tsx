@@ -9,7 +9,7 @@ import { z } from 'zod';
 export const TaskForm = (props: { csrfToken: string}) => {
   const form = useTaskForm({
     initialValues: {
-      title: 'ヤン・ファン・エイクの「ヘントの祭壇画」について',
+      title: '',
       loading: false,
       // subheading: dummy,
       subheading: '1. ',

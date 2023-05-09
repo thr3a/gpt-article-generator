@@ -3,7 +3,7 @@ import { TaskProps } from '@/features/article/TaskContext';
 // Convert the following bullet points into sentences:
 export const subheadingPrompt = (value: TaskProps): string => {
   return `
-${value.title}の解説記事の少見出しを5つ考えてください。
+${value.title}の解説記事の少見出しを${value.numberOfHeadings}つ考えてください。
 少見出し
 1. `;
 };
@@ -22,3 +22,4 @@ export const formatSubheading = (subheading: string): string[] => {
 };
 
 export const systemPrompt = 'I want you to act as a professional writer. Format your response using markdown.';
+
