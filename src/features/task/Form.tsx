@@ -17,7 +17,6 @@ export const TaskForm = (props: { csrfToken: string}) => {
       scripts: '',
     },
     validate: {
-      // title: isNotEmpty('タイトルは必須項目です'),
       scripts: isNotEmpty('箇条書きは必須項目です')
     },
   });

@@ -15,7 +15,7 @@ const IndexPage: NextPage<Props> = ({ csrfToken }) => {
   return (
     <>
       <Anchor href="/article">記事作成版</Anchor>
-      <Text fz="sm" mb="md">箇条書きから文章を生成します。</Text>
+      <Text fz="sm" mb="md">箇条書きから文章を生成します!</Text>
       <TaskForm csrfToken={csrfToken}></TaskForm>
     </>
   );
