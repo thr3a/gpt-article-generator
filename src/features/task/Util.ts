@@ -4,8 +4,8 @@ import { TaskProps } from '@/features/task/FormContext';
 export const assistantPrompt = (value: TaskProps): string => {
   return `
 Format your response using markdown.
-Rewrite the following bullet points as complete sentences in Japanese without omitting the original information:
-
+${ value.articleType === 'sentences' && 'Rewrite the following bullet points as complete sentences in Japanese without omitting the original information:' }
+${ value.articleType === 'articles'  && 'Convert the bullet point script into a sentences written in fluent Japanese without omitting the original information.' }
 # Bullet points
 ${value.scripts.replace(/^\s+|\s+$/g, '')}
 `;
