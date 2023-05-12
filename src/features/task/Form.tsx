@@ -36,7 +36,7 @@ export const TaskForm = (props: { csrfToken: string}) => {
       system_message: systemPrompt,
       human_message: assistantPrompt(form.values),
       csrf_token: props.csrfToken,
-      temperature: 0.1
+      temperature: 0.7
     };
     const response = await fetch('/api/chat/', {
       method: 'POST',
